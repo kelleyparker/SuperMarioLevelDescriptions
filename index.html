@@ -3,655 +3,122 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Super Mario Bros — All Levels</title>
+<title>Super Mario Bros. Level Guide</title>
+<meta name="description" content="A beginner-friendly guide to all 32 levels of the original Super Mario Bros. (NES): what's in each level, tips, secrets and Warp Zones.">
+<meta name="theme-color" content="#e52521">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍄</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --mario-red: #e52521;
-    --mario-blue: #049cd8;
-    --mario-yellow: #fbd000;
-    --mario-green: #43b047;
-    --sky: #5c94fc;
-    --ground: #c84c0c;
-    --brick: #a0522d;
-    --coin: #ffd700;
-    --dark: #0a0a1a;
-    --white: #f8f8f8;
-    --underground: #1a0a2e;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background-color: var(--dark);
-    font-family: 'Press Start 2P', monospace;
-    color: var(--white);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* Stars bg */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      radial-gradient(1px 1px at 10% 15%, white 0%, transparent 100%),
-      radial-gradient(1px 1px at 30% 60%, white 0%, transparent 100%),
-      radial-gradient(1px 1px at 55% 25%, white 0%, transparent 100%),
-      radial-gradient(1px 1px at 75% 80%, white 0%, transparent 100%),
-      radial-gradient(1px 1px at 90% 10%, white 0%, transparent 100%),
-      radial-gradient(1px 1px at 20% 90%, white 0%, transparent 100%),
-      radial-gradient(1px 1px at 65% 50%, white 0%, transparent 100%),
-      radial-gradient(1.5px 1.5px at 45% 70%, rgba(255,255,255,0.8) 0%, transparent 100%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  header {
-    position: relative;
-    text-align: center;
-    padding: 48px 20px 32px;
-    z-index: 1;
-  }
-
-  .logo {
-    display: inline-block;
-    background: var(--mario-red);
-    color: var(--white);
-    font-size: clamp(18px, 4vw, 32px);
-    padding: 16px 32px;
-    border: 4px solid var(--white);
-    box-shadow: 6px 6px 0 var(--mario-yellow), 10px 10px 0 #000;
-    letter-spacing: 2px;
-    margin-bottom: 16px;
-    text-shadow: 3px 3px 0 #000;
-    animation: titleBounce 2s ease-in-out infinite;
-  }
-
-  @keyframes titleBounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-6px); }
-  }
-
-  .subtitle {
-    font-family: 'VT323', monospace;
-    font-size: 24px;
-    color: var(--mario-yellow);
-    letter-spacing: 4px;
-    margin-top: 12px;
-    text-shadow: 2px 2px 0 #000;
-  }
-
-  /* Coin counter */
-  .coin-strip {
-    display: flex;
-    justify-content: center;
-    gap: 6px;
-    align-items: center;
-    margin-top: 8px;
-    font-family: 'VT323', monospace;
-    font-size: 22px;
-    color: var(--coin);
-  }
-  .coin-strip span.coin-icon {
-    display: inline-block;
-    width: 14px; height: 14px;
-    background: var(--coin);
-    border-radius: 50%;
-    border: 2px solid #b8860b;
-    animation: spin 1.5s linear infinite;
-  }
-  @keyframes spin {
-    0% { transform: scaleX(1); }
-    50% { transform: scaleX(0.1); }
-    100% { transform: scaleX(1); }
-  }
-
-  /* World selector */
-  .world-nav {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    padding: 20px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .world-btn {
-    background: transparent;
-    border: 3px solid var(--mario-yellow);
-    color: var(--mario-yellow);
-    font-family: 'Press Start 2P', monospace;
-    font-size: 10px;
-    padding: 8px 14px;
-    cursor: pointer;
-    transition: all 0.1s;
-    text-shadow: 1px 1px 0 #000;
-  }
-  .world-btn:hover, .world-btn.active {
-    background: var(--mario-yellow);
-    color: #000;
-    transform: scale(1.05);
-    box-shadow: 4px 4px 0 #000;
-  }
-
-  /* Worlds container */
-  .worlds-container {
-    position: relative;
-    z-index: 1;
-    padding: 0 20px 60px;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  .world-section {
-    margin-bottom: 48px;
-  }
-
-  .world-header {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 20px;
-    padding: 12px 20px;
-    background: rgba(0,0,0,0.5);
-    border-left: 6px solid var(--mario-yellow);
-  }
-
-  .world-number {
-    font-size: clamp(14px, 2.5vw, 20px);
-    color: var(--mario-yellow);
-    text-shadow: 2px 2px 0 #000;
-    white-space: nowrap;
-  }
-
-  .world-theme {
-    font-family: 'VT323', monospace;
-    font-size: 22px;
-    color: var(--white);
-    opacity: 0.8;
-  }
-
-  /* Level cards */
-  .levels-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 16px;
-  }
-
-  .level-card {
-    position: relative;
-    border: 3px solid #333;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s;
-    animation: fadeSlide 0.4s ease both;
-  }
-
-  .level-card:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 8px 0 #000, 0 0 20px rgba(253,208,0,0.4);
-    border-color: var(--mario-yellow);
-    z-index: 2;
-  }
-
-  @keyframes fadeSlide {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Card scenes */
-  .scene {
-    height: 120px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* Overworld */
-  .scene-overworld {
-    background: linear-gradient(180deg, var(--sky) 65%, #5a8700 65%, #5a8700 80%, #6b3a2a 80%);
-  }
-  /* Underground */
-  .scene-underground {
-    background: linear-gradient(180deg, var(--underground) 70%, #333 70%);
-  }
-  /* Castle */
-  .scene-castle {
-    background: linear-gradient(180deg, #1a1a2e 65%, #555 65%);
-  }
-  /* Water */
-  .scene-water {
-    background: linear-gradient(180deg, #0040a0 0%, #0060d0 50%, #004080 100%);
-  }
-  /* Bonus */
-  .scene-bonus {
-    background: linear-gradient(180deg, #000 0%, #111 100%);
-  }
-
-  /* Pixel decorations */
-  .cloud {
-    position: absolute;
-    background: white;
-    border: 2px solid #ddd;
-  }
-  .c1 { width:30px; height:12px; top:15px; left:20px; border-radius:6px; }
-  .c2 { width:20px; height:10px; top:8px; left:30px; border-radius:5px; }
-  .c3 { width:40px; height:14px; top:18px; right:25px; border-radius:7px; }
-  .c4 { width:24px; height:10px; top:12px; right:34px; border-radius:5px; }
-
-  .block {
-    position: absolute;
-    width: 18px; height: 18px;
-    background: var(--mario-yellow);
-    border: 2px solid #b8860b;
-    bottom: 42px;
-  }
-  .block::after {
-    content: '?';
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 9px;
-    color: #000;
-  }
-  .pipe {
-    position: absolute;
-    bottom: 28px;
-    width: 22px;
-    background: var(--mario-green);
-    border: 2px solid #2d7a30;
-  }
-  .pipe-top {
-    position: absolute;
-    width: 28px;
-    height: 10px;
-    background: var(--mario-green);
-    border: 2px solid #2d7a30;
-    left: -3px;
-  }
-
-  .brick-row {
-    position: absolute;
-    bottom: 28px;
-    display: flex;
-    gap: 2px;
-  }
-  .brick {
-    width: 16px; height: 14px;
-    background: var(--ground);
-    border: 2px solid #8b3a0c;
-  }
-
-  .castle-body {
-    position: absolute;
-    bottom: 28px;
-    right: 20px;
-    width: 50px; height: 55px;
-    background: #777;
-    border: 2px solid #444;
-  }
-  .castle-tower {
-    position: absolute;
-    top: -16px; left: 50%;
-    transform: translateX(-50%);
-    width: 20px; height: 18px;
-    background: #666;
-    border: 2px solid #444;
-  }
-  .castle-door {
-    position: absolute;
-    bottom: 0; left: 50%;
-    transform: translateX(-50%);
-    width: 14px; height: 18px;
-    background: #000;
-    border-radius: 7px 7px 0 0;
-  }
-  .castle-flag {
-    position: absolute;
-    top: -28px; left: 50%;
-    transform: translateX(-50%);
-    width: 2px; height: 20px;
-    background: #888;
-  }
-  .castle-flag::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 2px;
-    width: 10px; height: 8px;
-    background: var(--mario-red);
-    border: 1px solid #900;
-  }
-
-  .fish {
-    position: absolute;
-    font-size: 20px;
-    animation: swim 3s ease-in-out infinite;
-  }
-  @keyframes swim {
-    0%,100% { transform: translateX(0); }
-    50% { transform: translateX(20px); }
-  }
-
-  .mushroom { font-size: 24px; position: absolute; }
-  .star-icon { font-size: 20px; position: absolute; animation: starSpin 2s linear infinite; }
-  @keyframes starSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-  /* Card info */
-  .card-info {
-    padding: 12px 14px 14px;
-    background: rgba(0,0,0,0.85);
-  }
-
-  .level-id {
-    font-size: 10px;
-    color: var(--mario-yellow);
-    margin-bottom: 4px;
-    text-shadow: 1px 1px 0 #000;
-  }
-
-  .level-name {
-    font-family: 'VT323', monospace;
-    font-size: 20px;
-    color: var(--white);
-    margin-bottom: 6px;
-  }
-
-  .level-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-  }
-
-  .tag {
-    font-family: 'VT323', monospace;
-    font-size: 14px;
-    padding: 2px 6px;
-    border-radius: 2px;
-  }
-  .tag-overworld  { background: #2d6a4f; color: #95d5b2; }
-  .tag-underground{ background: #3a1a5e; color: #c77dff; }
-  .tag-castle     { background: #444; color: #ccc; }
-  .tag-water      { background: #0040a0; color: #90caf9; }
-  .tag-bonus      { background: #333; color: var(--coin); }
-  .tag-boss       { background: #7a0000; color: #ff6b6b; }
-  .tag-secret     { background: #1a3a1a; color: #69b96a; }
-  .tag-flag       { background: #5a4000; color: var(--mario-yellow); }
-
-  /* Footer */
-  footer {
-    position: relative;
-    z-index: 1;
-    text-align: center;
-    padding: 20px;
-    font-family: 'VT323', monospace;
-    font-size: 18px;
-    color: rgba(255,255,255,0.4);
-    border-top: 2px solid #222;
-  }
-
-  /* Pixel Mario sprite CSS */
-  .mario-sprite {
-    position: absolute;
-    bottom: 28px;
-    left: 14px;
-    width: 16px; height: 22px;
-    image-rendering: pixelated;
-  }
-
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 8px; }
-  ::-webkit-scrollbar-track { background: #111; }
-  ::-webkit-scrollbar-thumb { background: var(--mario-red); border: 1px solid #000; }
-</style>
+<link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
+<a class="skip-link" href="#levels">Skip to levels</a>
+
 <header>
-  <div class="logo">★ SUPER MARIO BROS ★</div>
-  <div class="subtitle">ALL 32 LEVELS — WORLDS 1–8</div>
-  <div class="coin-strip">
-    <span class="coin-icon"></span>
-    <span class="coin-icon"></span>
-    <span class="coin-icon"></span>
-    &nbsp;COIN × 32 LEVELS
-    <span class="coin-icon"></span>
-    <span class="coin-icon"></span>
-    <span class="coin-icon"></span>
+  <h1 class="logo">★ SUPER MARIO BROS ★</h1>
+  <p class="subtitle">ALL 32 LEVELS · WORLDS 1–8</p>
+  <p class="intro">
+    A friendly guide to every level of the 1985 NES classic. Pick a world, or search for an enemy,
+    then click any level to see tips and secrets. Tick off levels as you clear them.
+  </p>
+  <div class="coin-strip" aria-live="polite">
+    <span class="coin-icon" aria-hidden="true"></span>
+    <span id="progressText">0 / 32 CLEARED</span>
+    <span class="coin-icon" aria-hidden="true"></span>
+  </div>
+  <div class="progress-bar" role="progressbar" aria-label="Levels cleared" aria-valuemin="0" aria-valuemax="32" aria-valuenow="0" id="progressBar">
+    <div class="progress-fill" id="progressFill"></div>
   </div>
 </header>
 
-<nav class="world-nav" id="worldNav"></nav>
+<section class="guide" aria-label="Beginner's guide">
+  <details id="guide">
+    <summary>NEW TO MARIO? START HERE <span class="hint">controls · power-ups · warp zones</span></summary>
+    <div class="guide-grid">
+      <div class="guide-card">
+        <h3>🎮 CONTROLS (NES)</h3>
+        <ul>
+          <li><kbd>←</kbd> <kbd>→</kbd> Walk</li>
+          <li><kbd>A</kbd> Jump. Hold it to jump higher.</li>
+          <li><kbd>B</kbd> Hold to run. Tap to throw fireballs.</li>
+          <li><kbd>↓</kbd> Crouch (when big) or enter a pipe</li>
+          <li><kbd>START</kbd> Pause</li>
+        </ul>
+      </div>
+      <div class="guide-card">
+        <h3>🍄 POWER-UPS</h3>
+        <ul>
+          <li><b>Super Mushroom</b>: grow big and survive one extra hit.</li>
+          <li><b>Fire Flower</b>: throw fireballs with B.</li>
+          <li><b>Starman</b>: a few seconds of invincibility.</li>
+          <li><b>1-Up Mushroom</b> (green): an extra life.</li>
+          <li><b>100 coins</b>: also an extra life.</li>
+        </ul>
+      </div>
+      <div class="guide-card">
+        <h3>🗺 HOW THE GAME IS LAID OUT</h3>
+        <p>There are 8 worlds with 4 levels each. Levels 1–3 end at a flagpole. Level 4 is always a castle where you face Bowser.</p>
+        <p>The first seven Bowsers are fakes (other enemies in disguise). Hit one with fireballs to see what it really is.</p>
+      </div>
+      <div class="guide-card">
+        <h3>🌀 WARP ZONES (SHORTCUTS)</h3>
+        <ul>
+          <li><b>1-2</b>: run along the ceiling at the end → Worlds 2, 3, 4</li>
+          <li><b>4-2</b>: climb a hidden vine → Worlds 6, 7, 8</li>
+          <li><b>4-2</b>: run along the ceiling at the end → World 5</li>
+        </ul>
+        <p>Skipping is fun, but playing every level is the best way to learn.</p>
+      </div>
+      <div class="guide-card">
+        <h3>🃏 READING A LEVEL CARD</h3>
+        <p><b>LEVEL 1-2</b> means World 1, level 2. The <span style="color:var(--mario-red)">■■■</span>□□ meter shows difficulty from 1 to 5.</p>
+        <div class="level-tags" id="legend"></div>
+      </div>
+      <div class="guide-card">
+        <h3>⌨ SITE SHORTCUTS</h3>
+        <ul>
+          <li><kbd>/</kbd> Jump to search</li>
+          <li><kbd>←</kbd> <kbd>→</kbd> Previous or next level (in the detail view)</li>
+          <li><kbd>Esc</kbd> Close the detail view</li>
+          <li><kbd>C</kbd> Mark the open level as cleared</li>
+        </ul>
+      </div>
+    </div>
+  </details>
+</section>
 
-<div class="worlds-container" id="worldsContainer"></div>
+<div class="toolbar">
+  <div class="toolbar-inner">
+    <nav class="world-nav" id="worldNav" aria-label="Jump to world"></nav>
+    <div class="filters" role="search">
+      <label for="search" class="visually-hidden">Search levels</label>
+      <input id="search" class="search" type="search" placeholder="Search: Lakitu, warp, 4-2…  (press /)" autocomplete="off">
+      <div id="typeFilters" class="filters" role="group" aria-label="Filter by level type"></div>
+    </div>
+    <div class="result-count" id="resultCount" aria-live="polite"></div>
+  </div>
+</div>
+
+<main id="levels" tabindex="-1">
+  <div id="worldsContainer"></div>
+  <p class="empty-state" id="emptyState" hidden>No levels match. Try a different search or filter.</p>
+</main>
+
+<dialog class="level-dialog" id="levelDialog" aria-labelledby="dialogTitle">
+  <button class="dialog-close" id="dialogClose" aria-label="Close">✕</button>
+  <div id="dialogContent"></div>
+</dialog>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">▲</button>
 
 <footer>
-  © 1985 NINTENDO · NES ORIGINAL · PRESS START
+  <p>An unofficial fan-made guide. Super Mario Bros. is © 1985 Nintendo. Not affiliated with or endorsed by Nintendo.</p>
+  <p>Spotted a mistake? <a href="https://github.com/kelleyparker/SuperMarioLevelDescriptions">Contribute on GitHub</a> · <button type="button" id="resetProgress">Reset my progress</button></p>
 </footer>
 
-<script>
-const worlds = [
-  {
-    number: 1,
-    name: "Mushroom Kingdom",
-    color: "#049cd8",
-    levels: [
-      { id:"1-1", name:"Overworld Plains",     type:"overworld",   tags:["overworld","flag"],   desc:"The iconic first level. Rolling hills, pipes, ? blocks." },
-      { id:"1-2", name:"Underground Maze",      type:"underground", tags:["underground","secret"],desc:"First underground level. Hidden warp zone to worlds 2, 3, 4." },
-      { id:"1-3", name:"Mushroom Treetops",     type:"overworld",   tags:["overworld","flag"],   desc:"Platforms on mushroom tops. High-altitude challenge." },
-      { id:"1-4", name:"Bowser's First Castle", type:"castle",      tags:["castle","boss"],      desc:"Fire-bar castle. First Fake Bowser encounter." },
-    ]
-  },
-  {
-    number: 2,
-    name: "Desert Land",
-    color: "#e8a000",
-    levels: [
-      { id:"2-1", name:"Desert Overworld",      type:"overworld",   tags:["overworld","flag"],   desc:"Koopa Troopas patrol dry, hilly terrain." },
-      { id:"2-2", name:"Underwater Cavern",      type:"water",       tags:["water"],              desc:"First water level. Bloopers and Cheep Cheeps abound." },
-      { id:"2-3", name:"Rope Bridge",           type:"overworld",   tags:["overworld","flag"],   desc:"Lifts and moving platforms over a deadly pit." },
-      { id:"2-4", name:"Bowser's Lava Castle",  type:"castle",      tags:["castle","boss"],      desc:"Lava pits and Bowser's axe bridge trap." },
-    ]
-  },
-  {
-    number: 3,
-    name: "Water Land",
-    color: "#0060d0",
-    levels: [
-      { id:"3-1", name:"Lakeside Platforms",    type:"overworld",   tags:["overworld","flag"],   desc:"Platforms over water with Koopa Paratroopas." },
-      { id:"3-2", name:"Underground River",      type:"underground", tags:["underground","secret"],desc:"Warp zone to worlds 6, 7, 8 hidden here." },
-      { id:"3-3", name:"Treetop Heights",        type:"overworld",   tags:["overworld","flag"],   desc:"High platforms, Bullet Bills, tricky jumps." },
-      { id:"3-4", name:"Hammer Bros Castle",    type:"castle",      tags:["castle","boss"],      desc:"Hammer Bros patrol the castle halls." },
-    ]
-  },
-  {
-    number: 4,
-    name: "Giant Land",
-    color: "#43b047",
-    levels: [
-      { id:"4-1", name:"Grassy Cliffs",          type:"overworld",   tags:["overworld","flag"],   desc:"Bigger enemies and longer gaps appear here." },
-      { id:"4-2", name:"Dark Underground",       type:"underground", tags:["underground"],        desc:"Warp zone to worlds 6 and 7. Many hidden blocks." },
-      { id:"4-3", name:"Sky Bridges",            type:"overworld",   tags:["overworld","flag"],   desc:"Narrow ledges high above the clouds." },
-      { id:"4-4", name:"Bowser's Maze Castle",   type:"castle",      tags:["castle","boss"],      desc:"Looping hallways designed to confuse the player." },
-    ]
-  },
-  {
-    number: 5,
-    name: "Sky Land",
-    color: "#c77dff",
-    levels: [
-      { id:"5-1", name:"Hillside Koopas",        type:"overworld",   tags:["overworld","flag"],   desc:"Dense enemy formations on rolling hills." },
-      { id:"5-2", name:"Deep Caverns",           type:"underground", tags:["underground"],        desc:"Tight corridors with Goombas and Koopas." },
-      { id:"5-3", name:"Elevated Walkways",      type:"overworld",   tags:["overworld","flag"],   desc:"Narrow elevated platforms with Paratroopas." },
-      { id:"5-4", name:"Bowser's Fire Castle",   type:"castle",      tags:["castle","boss"],      desc:"Multiple fire-bar gauntlets leading to Bowser." },
-    ]
-  },
-  {
-    number: 6,
-    name: "Ice Land",
-    color: "#90e0ef",
-    levels: [
-      { id:"6-1", name:"Rocky Overworld",        type:"overworld",   tags:["overworld","flag"],   desc:"Faster-paced level with tighter jumps." },
-      { id:"6-2", name:"Night Underground",      type:"underground", tags:["underground"],        desc:"Bullet Bills and a winding underground path." },
-      { id:"6-3", name:"Hanging Platforms",      type:"overworld",   tags:["overworld","flag"],   desc:"Platforms suspended over voids with heavy winds." },
-      { id:"6-4", name:"Bowser's Dark Castle",   type:"castle",      tags:["castle","boss"],      desc:"One of the toughest castle layouts." },
-    ]
-  },
-  {
-    number: 7,
-    name: "Pipe Land",
-    color: "#69b96a",
-    levels: [
-      { id:"7-1", name:"Evening Overworld",      type:"overworld",   tags:["overworld","flag"],   desc:"Night-time overworld with aggressive Koopas." },
-      { id:"7-2", name:"Sunken Waterway",        type:"water",       tags:["water"],              desc:"Swim through Blooper-infested waters." },
-      { id:"7-3", name:"Forest Canopy",          type:"overworld",   tags:["overworld","flag"],   desc:"Treetop platforms with Lakitu dropping Spinies." },
-      { id:"7-4", name:"Bowser's Lava Maze",     type:"castle",      tags:["castle","boss"],      desc:"Lava moat and maze-like structure guard Bowser." },
-    ]
-  },
-  {
-    number: 8,
-    name: "Dark Land",
-    color: "#e52521",
-    levels: [
-      { id:"8-1", name:"Bullet Bill Gauntlet",   type:"overworld",   tags:["overworld","flag"],   desc:"Non-stop Bullet Bills and moving platforms." },
-      { id:"8-2", name:"Lava Crossing",          type:"overworld",   tags:["overworld","flag"],   desc:"Narrow paths above lava and spiked obstacles." },
-      { id:"8-3", name:"The Final Approach",     type:"overworld",   tags:["overworld","flag"],   desc:"Last stretch before the final castle." },
-      { id:"8-4", name:"Bowser's Final Castle",  type:"castle",      tags:["castle","boss","secret"],desc:"The ultimate challenge. The real Bowser awaits." },
-    ]
-  },
-];
-
-// Bonus levels
-const bonusLevels = [
-  { id:"B-1", name:"Underground Bonus Room", type:"bonus", tags:["bonus","underground"], desc:"Hidden coin-filled rooms accessed via pipes." },
-  { id:"B-2", name:"Sky Bonus Stage",        type:"bonus", tags:["bonus","overworld"],  desc:"Cloud-level bonus with coins and mushrooms." },
-];
-
-function sceneHTML(type, levelId) {
-  const isW8 = levelId.startsWith('8');
-  switch(type) {
-    case 'overworld':
-      return `<div class="scene scene-overworld">
-        <div class="cloud c1"></div><div class="cloud c2"></div>
-        <div class="cloud c3"></div><div class="cloud c4"></div>
-        <div class="block" style="left:60px">&nbsp;</div>
-        <div class="block" style="left:82px">&nbsp;</div>
-        <div class="brick-row" style="right:10px">
-          <div class="brick"></div><div class="brick"></div><div class="brick"></div>
-        </div>
-        <div class="pipe" style="right:50px;height:32px"><div class="pipe-top"></div></div>
-        <span style="position:absolute;bottom:30px;left:12px;font-size:20px">🍄</span>
-      </div>`;
-    case 'underground':
-      return `<div class="scene scene-underground">
-        <div class="brick-row" style="top:8px;left:0;right:0;justify-content:center">
-          <div class="brick"></div><div class="brick"></div><div class="brick"></div><div class="brick"></div><div class="brick"></div><div class="brick"></div>
-        </div>
-        <div class="block" style="left:40px;background:#c84;">&nbsp;</div>
-        <div class="block" style="left:62px;background:#c84;">&nbsp;</div>
-        <span style="position:absolute;bottom:35px;right:20px;font-size:18px;color:#ffd700">🪙🪙🪙</span>
-        <span style="position:absolute;top:50%;left:16px;transform:translateY(-50%);font-size:22px">👾</span>
-      </div>`;
-    case 'castle':
-      return `<div class="scene scene-castle">
-        <div class="castle-body">
-          <div class="castle-tower"><div class="castle-flag"></div></div>
-          <div class="castle-door"></div>
-        </div>
-        <div class="brick-row" style="bottom:28px;left:0">
-          <div class="brick"></div><div class="brick"></div><div class="brick"></div><div class="brick"></div>
-        </div>
-        <span style="position:absolute;top:20px;left:16px;font-size:22px">🔥</span>
-        <span style="position:absolute;top:50px;left:40px;font-size:16px">🔥</span>
-        ${isW8 ? '<span style="position:absolute;top:14px;right:12px;font-size:28px">👑</span>' : ''}
-      </div>`;
-    case 'water':
-      return `<div class="scene scene-water">
-        <span class="fish" style="top:25px;left:10px">🐟</span>
-        <span class="fish" style="top:55px;right:15px;animation-delay:1s">🐡</span>
-        <span class="fish" style="top:40px;left:45%">🦑</span>
-        <span style="position:absolute;bottom:10px;left:20px;font-size:16px;color:#90caf9">💧💧💧</span>
-      </div>`;
-    case 'bonus':
-      return `<div class="scene scene-bonus">
-        <span class="star-icon" style="top:20px;left:20px;color:#ffd700">⭐</span>
-        <span class="star-icon" style="top:40px;right:20px;color:#ffd700;animation-delay:.5s">⭐</span>
-        <span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:30px">🪙</span>
-        <span style="position:absolute;bottom:14px;width:100%;text-align:center;font-family:'VT323',monospace;font-size:22px;color:#ffd700">BONUS STAGE!</span>
-      </div>`;
-    default: return `<div class="scene scene-overworld"></div>`;
-  }
-}
-
-function tagHTML(tags) {
-  return tags.map(t => `<span class="tag tag-${t}">${t.toUpperCase()}</span>`).join('');
-}
-
-function buildCard(level, delay) {
-  return `
-    <div class="level-card" style="animation-delay:${delay}s">
-      ${sceneHTML(level.type, level.id)}
-      <div class="card-info">
-        <div class="level-id">LEVEL ${level.id}</div>
-        <div class="level-name">${level.name}</div>
-        <div class="level-tags">${tagHTML(level.tags)}</div>
-      </div>
-    </div>`;
-}
-
-// Build nav
-const nav = document.getElementById('worldNav');
-worlds.forEach(w => {
-  const btn = document.createElement('button');
-  btn.className = 'world-btn';
-  btn.textContent = `WORLD ${w.number}`;
-  btn.onclick = () => {
-    document.getElementById(`world-${w.number}`).scrollIntoView({behavior:'smooth'});
-    document.querySelectorAll('.world-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-  };
-  nav.appendChild(btn);
-});
-
-// Build worlds
-const container = document.getElementById('worldsContainer');
-worlds.forEach(w => {
-  const section = document.createElement('section');
-  section.className = 'world-section';
-  section.id = `world-${w.number}`;
-
-  const themeMap = {
-    1:'Overworld', 2:'Desert Land', 3:'Water Land', 4:'Giant Land',
-    5:'Sky Land', 6:'Ice Land', 7:'Pipe Land', 8:'Dark Land ★'
-  };
-
-  section.innerHTML = `
-    <div class="world-header" style="border-left-color:${w.color}">
-      <div class="world-number" style="color:${w.color}">WORLD ${w.number}</div>
-      <div class="world-theme">${themeMap[w.number]}</div>
-    </div>
-    <div class="levels-grid">
-      ${w.levels.map((l,i) => buildCard(l, i * 0.07)).join('')}
-    </div>`;
-  container.appendChild(section);
-});
-
-// Bonus section
-const bonusSection = document.createElement('section');
-bonusSection.className = 'world-section';
-bonusSection.innerHTML = `
-  <div class="world-header" style="border-left-color:#ffd700">
-    <div class="world-number" style="color:#ffd700">BONUS</div>
-    <div class="world-theme">Hidden Bonus Stages</div>
-  </div>
-  <div class="levels-grid">
-    ${bonusLevels.map((l,i) => buildCard(l, i * 0.1)).join('')}
-  </div>`;
-container.appendChild(bonusSection);
-</script>
+<script src="js/levels.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
